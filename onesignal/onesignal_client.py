@@ -529,11 +529,11 @@ class OneSignal(object):
                             included_segments=('All',), app_id=None, player_ids=None, **kwargs):
         """
         Creates a notification by sending a notification to https://onesignal.com/api/v1/notifications
-        :param heading: push notification heading / title
+        :param heading: push notification heading / title. May be dict like {'en': 'text', 'ru': 'text'} or string.
         :param url: target url for push notification. User will be redirected to this url on clicking
         push notification
         :param app_id: App's ID
-        :param contents: Contents of the message
+        :param contents: Contents of the message. May be dict like {'en': 'text', 'ru': 'text'} or string.
         :param player_ids: list of player_ids to whom we specifically want to send notifications
         :param included_segments: segments to be included to send push notification
         :param kwargs: There can be more arguments as given on
@@ -550,13 +550,19 @@ class OneSignal(object):
         app_id = app_id if app_id else self.app_id
         assert app_id and contents
         data = {
-            "contents": {"en": contents},
             "app_id": app_id
         }
+        if isinstance(contents, dict):
+            data['contents'] = contents
+        else:
+            data['contents'] = {'en': contents}
         if url and is_valid_url(url):
             data['url'] = url
         if heading:
-            data['headings'] = {"en": heading}
+            if isinstance(heading, dict):
+                data['headings'] = heading
+            else:
+                data['headings'] = {"en": heading}
 
         if player_ids and isinstance(player_ids, (list, tuple)):
             data['include_player_ids'] = player_ids
