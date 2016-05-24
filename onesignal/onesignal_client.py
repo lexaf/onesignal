@@ -526,7 +526,7 @@ class OneSignal(object):
         return send_request(url, headers=headers, method='POST')
 
     def create_notification(self, contents, heading='', url='',
-                            included_segments=('All',), app_id=None, player_ids=None, **kwargs):
+                            included_segments=('All',), app_id=None, player_ids=None, custom_data=None, **kwargs):
         """
         Creates a notification by sending a notification to https://onesignal.com/api/v1/notifications
         :param heading: push notification heading / title. May be dict like {'en': 'text', 'ru': 'text'} or string.
@@ -536,6 +536,8 @@ class OneSignal(object):
         :param contents: Contents of the message. May be dict like {'en': 'text', 'ru': 'text'} or string.
         :param player_ids: list of player_ids to whom we specifically want to send notifications
         :param included_segments: segments to be included to send push notification
+        :param custom_data: Custom key value pair hash that you can programmatically read in your app's code.
+                Example: {"abc": "123", "foo": "bar"}
         :param kwargs: There can be more arguments as given on
         https://documentation.onesignal.com/docs/notifications-create-notification
         :return: Returns a HTTP response object which, per docs, will contain response like:
@@ -568,6 +570,10 @@ class OneSignal(object):
             data['include_player_ids'] = player_ids
         elif isinstance(included_segments, (list, tuple)) and len(included_segments):
             data['included_segments'] = included_segments
+
+        # custom_data
+        if custom_data and isinstance(custom_data, dict):
+            data['data'] = custom_data
 
         api_url = self.api_url + "/notifications"
         data = json.dumps(data)
