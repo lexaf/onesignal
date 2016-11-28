@@ -574,6 +574,8 @@ class OneSignal(object):
         # custom_data
         if custom_data and isinstance(custom_data, dict):
             data['data'] = custom_data
+			
+		data.update(kwargs)
 
         api_url = self.api_url + "/notifications"
         data = json.dumps(data)
